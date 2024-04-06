@@ -24,7 +24,8 @@ const ProductDetail = ({ productId }: { productId: number }) => {
 
   if (error) return <div>Error: {error}</div>;
 
-  if (!product) return <div>The given product was not found.</div>;
+  if (!product || product?.message)
+    return <div>The given product was not found.</div>;
 
   return (
     <div>
