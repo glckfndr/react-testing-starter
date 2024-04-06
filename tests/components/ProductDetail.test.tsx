@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import ProductDetail from "../../src/components/ProductDetail";
 import { db } from "../mocks/db";
-import { Product } from "../../src/entities";
+import { HttpResponse, http } from "msw";
+import { server } from "../mocks/server";
 
 describe("ProductDetail", () => {
   const productIds: number[] = [];
@@ -51,5 +52,14 @@ describe("ProductDetail", () => {
     expect(
       await screen.findByText(new RegExp(product!.price.toString()))
     ).toBeInTheDocument();
+  });
+
+  it("should render an error if data fetching fails", async () => {
+    server.use(http.get("/products/1", () => HttpResponse.error()));
+
+    render(<ProductDetail productId={1} />);
+
+    const message = await screen.findByText(/error/i);
+    expect(message).toBeInTheDocument();
   });
 });
